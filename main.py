@@ -29,7 +29,8 @@ def init_game_variable():
         black_options, \
         white_options, \
         piece_list, \
-        castling
+        castling_white, \
+        castling_black
         
             
     white_pieces = ['rook', 'knight', 'bishop', 'king', 'queen', 'bishop', 'knight', 'rook', 
@@ -54,7 +55,8 @@ def init_game_variable():
     counter = 0
     winner = ""
     game_over = False
-    castling = True
+    castling_white = True
+    castling_black = True
     black_options = check_options(black_pieces, black_pieces_locations, 'black')
     white_options = check_options(white_pieces, white_pieces_locations, 'white')
 
@@ -179,7 +181,7 @@ def check_king(position, color):
         target = (position[0] + targets[i][0], position[1] + targets[i][1])
         if target not in friend_list and 0 <= target[0] <= 7 and 0 <= target[1] <= 7:
             moves_list.append(target)
-    if castling:
+    if (castling_white and color == 'white') or (castling_black and color == 'black'):
         if (position[0] - 2, position[1]) not in friend_list and 0 <= position[0] - 2 <= 7 and 0 <= position[1] <= 7:
             moves_list.append((position[0] - 3, position[1]))
         if (position[0] + 2, position[1]) not in friend_list and 0 <= position[0] + 2 <= 7 and 0 <= position[1] <= 7 and \
@@ -396,14 +398,13 @@ while run:
             x_coord = event.pos[0] // 80
             y_coord = event.pos[1] // 80
             click_coords = (x_coord, y_coord)
-            print(turn_step)
             if turn_step <= 1:
                 if selection == 100 and click_coords in white_pieces_locations:
                     selection = white_pieces_locations.index(click_coords)
                     if turn_step == 0:
                         turn_step = 1
                 if selection != 100 and click_coords in white_pieces_locations:
-                    if white_pieces[selection] == 'king' and (click_coords == (0, 0) or click_coords == (7, 0)):
+                    if white_pieces[selection] == 'king' and (click_coords == (0, 0) or click_coords == (7, 0)) and castling_white:
                         pass
                     else:
                         selection = white_pieces_locations.index(click_coords)
@@ -412,11 +413,11 @@ while run:
                             
                 if click_coords in valid_moves and selection != 100:
                     if white_pieces[selection] == 'king':         
-                        if castling:
+                        if castling_white:
                             if click_coords == (0, 0):
                                 white_pieces_locations[selection] = (1, 0)
                                 white_pieces_locations[0] = (2, 0)
-                                castling = False
+                                castling_white = False
                                 black_options = check_options(black_pieces, black_pieces_locations, 'black')
                                 white_options = check_options(white_pieces, white_pieces_locations, 'white')
                                 turn_step = 2
@@ -426,7 +427,7 @@ while run:
                             elif click_coords == (7, 0):
                                 white_pieces_locations[selection] = (5, 0)
                                 white_pieces_locations[7] = (4, 0)
-                                castling = False
+                                castling_white = False
                                 black_options = check_options(black_pieces, black_pieces_locations, 'black')
                                 white_options = check_options(white_pieces, white_pieces_locations, 'white')
                                 turn_step = 2
@@ -453,7 +454,7 @@ while run:
                     if turn_step == 2:
                         turn_step = 3
                 if selection != 100 and click_coords in black_pieces_locations:
-                    if white_pieces[selection] == 'king' and (click_coords == (0, 7) or click_coords == (7, 7)):
+                    if white_pieces[selection] == 'king' and (click_coords == (0, 7) or click_coords == (7, 7)) and castling_black:
                         pass
                     else:
                         selection = black_pieces_locations.index(click_coords)
@@ -461,11 +462,11 @@ while run:
                             turn_step = 3
                 if click_coords in valid_moves and selection != 100:
                     if black_pieces[selection] == 'king':         
-                        if castling:
+                        if castling_black:
                             if click_coords == (0, 7):
                                 black_pieces_locations[selection] = (1, 7)
                                 black_pieces_locations[0] = (2, 7)
-                                castling = False
+                                castling_black = False
                                 black_options = check_options(black_pieces, black_pieces_locations, 'black')
                                 white_options = check_options(white_pieces, white_pieces_locations, 'white')
                                 turn_step = 0
@@ -475,7 +476,7 @@ while run:
                             elif click_coords == (7, 7):
                                 black_pieces_locations[selection] = (5, 7)
                                 black_pieces_locations[7] = (4, 7)
-                                castling = False
+                                castling_black = False
                                 black_options = check_options(black_pieces, black_pieces_locations, 'black')
                                 white_options = check_options(white_pieces, white_pieces_locations, 'white')
                                 turn_step = 0
