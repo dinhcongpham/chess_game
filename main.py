@@ -182,10 +182,12 @@ def check_king(position, color):
         if target not in friend_list and 0 <= target[0] <= 7 and 0 <= target[1] <= 7:
             moves_list.append(target)
     if (castling_white and color == 'white') or (castling_black and color == 'black'):
-        if (position[0] - 2, position[1]) not in friend_list and 0 <= position[0] - 2 <= 7 and 0 <= position[1] <= 7:
+        if (position[0] - 2, position[1]) not in friend_list and 0 <= position[0] - 2 <= 7 and 0 <= position[1] <= 7 and \
+            (position[0] - 1, position[1]) not in friend_list and 0 <= position[0] - 1 <= 7 and 0 <= position[1] <= 7:
             moves_list.append((position[0] - 3, position[1]))
-        if (position[0] + 2, position[1]) not in friend_list and 0 <= position[0] + 2 <= 7 and 0 <= position[1] <= 7 and \
-           (position[0] + 3, position[1]) not in friend_list and 0 <= position[0] + 3 <= 7:
+        if (position[0] + 1, position[1]) not in friend_list and 0 <= position[0] + 1 <= 7 and 0 <= position[1] <= 7 and \
+            (position[0] + 2, position[1]) not in friend_list and 0 <= position[0] + 2 <= 7 and 0 <= position[1] <= 7 and \
+            (position[0] + 3, position[1]) not in friend_list and 0 <= position[0] + 3 <= 7:
             moves_list.append((position[0] + 4, position[1]))
     return moves_list
 
@@ -252,8 +254,14 @@ def check_rook(position, color):
                              path = False
                     chain += 1
             else: path = False
-        
-    
+    if (castling_white and color == 'white') or (castling_black and color == 'black'):
+        if (position[0] + 2, position[1]) not in friend_list and 0 <= position[0] + 2 <= 7 and 0 <= position[1] <= 7 and \
+            (position[0] + 1, position[1]) not in friend_list and 0 <= position[0] + 1 <= 7 and 0 <= position[1] <= 7:
+            moves_list.append((position[0] + 3, position[1]))
+        if (position[0] - 1, position[1]) not in friend_list and 0 <= position[0] - 1 <= 7 and 0 <= position[1] <= 7 and \
+            (position[0] - 2, position[1]) not in friend_list and 0 <= position[0] - 2 <= 7 and 0 <= position[1] <= 7 and \
+            (position[0] - 3, position[1]) not in friend_list and 0 <= position[0] - 3 <= 7:
+            moves_list.append((position[0] - 4, position[1]))
     return moves_list
 def check_queen(position, color):
     moves_list = check_bishop(position, color)
@@ -407,6 +415,8 @@ while run:
                 if selection != 100 and click_coords in white_pieces_locations:
                     if white_pieces[selection] == 'king' and (click_coords == (0, 0) or click_coords == (7, 0)) and castling_white:
                         pass
+                    elif white_pieces[selection] == 'rook' and click_coords == (3, 0) and castling_white:
+                        pass
                     else:
                         selection = white_pieces_locations.index(click_coords)
                         if turn_step == 0:
@@ -435,6 +445,28 @@ while run:
                                 selection = 100
                                 valid_moves = []
                                 continue
+                    if white_pieces[selection] == 'rook':         
+                        if castling_white:
+                            if click_coords == (3, 0) and white_pieces_locations[selection] == (0, 0):
+                                white_pieces_locations[3] = (1, 0)
+                                white_pieces_locations[selection] = (2, 0)
+                                castling_white = False
+                                black_options = check_options(black_pieces, black_pieces_locations, 'black')
+                                white_options = check_options(white_pieces, white_pieces_locations, 'white')
+                                turn_step = 2
+                                selection = 100
+                                valid_moves = []
+                                continue
+                            elif click_coords == (3, 0) and white_pieces_locations[selection] == (7, 0):
+                                white_pieces_locations[3] = (5, 0)
+                                white_pieces_locations[selection] = (4, 0)
+                                castling_white = False
+                                black_options = check_options(black_pieces, black_pieces_locations, 'black')
+                                white_options = check_options(white_pieces, white_pieces_locations, 'white')
+                                turn_step = 2
+                                selection = 100
+                                valid_moves = []
+                                continue
                     white_pieces_locations[selection] = click_coords
                     if click_coords in black_pieces_locations:
                         black_piece = black_pieces_locations.index(click_coords)
@@ -455,7 +487,9 @@ while run:
                     if turn_step == 2:
                         turn_step = 3
                 if selection != 100 and click_coords in black_pieces_locations:
-                    if white_pieces[selection] == 'king' and (click_coords == (0, 7) or click_coords == (7, 7)) and castling_black:
+                    if black_pieces[selection] == 'king' and (click_coords == (0, 7) or click_coords == (7, 7)) and castling_black:
+                        pass
+                    elif black_pieces[selection] == 'rook' and click_coords == (3, 7) and castling_black:
                         pass
                     else:
                         selection = black_pieces_locations.index(click_coords)
@@ -477,6 +511,28 @@ while run:
                             elif click_coords == (7, 7):
                                 black_pieces_locations[selection] = (5, 7)
                                 black_pieces_locations[7] = (4, 7)
+                                castling_black = False
+                                black_options = check_options(black_pieces, black_pieces_locations, 'black')
+                                white_options = check_options(white_pieces, white_pieces_locations, 'white')
+                                turn_step = 0
+                                selection = 100
+                                valid_moves = []
+                                continue
+                    if black_pieces[selection] == 'rook':         
+                        if castling_black:
+                            if click_coords == (3, 7) and black_pieces_locations[selection] == (0, 7):
+                                black_pieces_locations[3] = (1, 7)
+                                black_pieces_locations[selection] = (2, 7)
+                                castling_black = False
+                                black_options = check_options(black_pieces, black_pieces_locations, 'black')
+                                white_options = check_options(white_pieces, white_pieces_locations, 'white')
+                                turn_step = 0
+                                selection = 100
+                                valid_moves = []
+                                continue
+                            elif click_coords == (3, 7) and black_pieces_locations[selection] == (7, 7):
+                                black_pieces_locations[3] = (5, 7)
+                                black_pieces_locations[selection] = (4, 7)
                                 castling_black = False
                                 black_options = check_options(black_pieces, black_pieces_locations, 'black')
                                 white_options = check_options(white_pieces, white_pieces_locations, 'white')
