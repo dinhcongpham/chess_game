@@ -54,7 +54,7 @@ Once you have completed the installation and file setup, open your Terminal or C
 
 ```bash
 python main.py
-
+```
 
 
 ## Code Structure
